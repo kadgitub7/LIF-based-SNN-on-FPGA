@@ -1,11 +1,28 @@
 `timescale 1ns / 1ps
 
 module top_snn(
-    clk, rst, sw_start, sw_0, sw_1, sw_2, ld_0, ld_1, ld_2
+    clk_100, rst, sw_start, sw_0, sw_1, sw_2, ld_0, ld_1, ld_2
     );
     
-    input clk, rst, sw_start, sw_0, sw_1, sw_2;
+    input clk_100, rst, sw_start, sw_0, sw_1, sw_2;
     output reg ld_0, ld_1, ld_2;
+    
+    wire clk;
+    wire locked;
+    
+    wire internal_rst;
+    assign internal_rst = rst | ~locked;
+
+    // Instantiate the generated Clocking Wizard IP
+    clk_wiz_0 clk_wizard_inst (
+        // Clock out ports
+        .clk_out1(clk),     // This output is now 50 MHz
+        // Status and Control signals
+        .reset(rst),        // Active high reset input
+        .locked(locked),          // Goes high when output clock stabilizes
+        // Clock in ports
+        .clk_in1(clk_100)   // 100 MHz board clock input
+    );
     
     localparam [5:0] IDLE = 6'd0,
                      LOAD_INPUT_1 = 6'd1,
@@ -93,16 +110,16 @@ module top_snn(
     reg en1_1, en1_2, en1_3, en2_1, en2_2, en2_3;
     
     // instantiating and connecting neurons for forward prop
-    snn_neuron n1_1(clk, rst, en1_1, n1_1_input, w0_1_1, w1_1_1, w2_1_1, d_c_1_1, thresh_1_1, n1_1_output, potential_t_1_1);
-    snn_neuron n1_2(clk, rst, en1_2, n1_2_input, w0_1_2, w1_1_2, w2_1_2, d_c_1_2, thresh_1_2, n1_2_output, potential_t_1_2);
-    snn_neuron n1_3(clk, rst, en1_3, n1_3_input, w0_1_3, w1_1_3, w2_1_3, d_c_1_3, thresh_1_3, n1_3_output, potential_t_1_3);
+    snn_neuron n1_1(clk, internal_rst, en1_1, n1_1_input, w0_1_1, w1_1_1, w2_1_1, d_c_1_1, thresh_1_1, n1_1_output, potential_t_1_1);
+    snn_neuron n1_2(clk, internal_rst, en1_2, n1_2_input, w0_1_2, w1_1_2, w2_1_2, d_c_1_2, thresh_1_2, n1_2_output, potential_t_1_2);
+    snn_neuron n1_3(clk, internal_rst, en1_3, n1_3_input, w0_1_3, w1_1_3, w2_1_3, d_c_1_3, thresh_1_3, n1_3_output, potential_t_1_3);
     
-    snn_neuron n2_1(clk, rst, en2_1, {n1_3_output, n1_2_output, n1_1_output}, w0_2_1, w1_2_1, w2_2_1, d_c_2_1, thresh_2_1, n2_1_output, potential_t_2_1);
-    snn_neuron n2_2(clk, rst, en2_2, {n1_3_output, n1_2_output, n1_1_output}, w0_2_2, w1_2_2, w2_2_2, d_c_2_2, thresh_2_2, n2_2_output, potential_t_2_2);
-    snn_neuron n2_3(clk, rst, en2_3, {n1_3_output, n1_2_output, n1_1_output}, w0_2_3, w1_2_3, w2_2_3, d_c_2_3, thresh_2_3, n2_3_output, potential_t_2_3);
+    snn_neuron n2_1(clk, internal_rst, en2_1, {n1_3_output, n1_2_output, n1_1_output}, w0_2_1, w1_2_1, w2_2_1, d_c_2_1, thresh_2_1, n2_1_output, potential_t_2_1);
+    snn_neuron n2_2(clk, internal_rst, en2_2, {n1_3_output, n1_2_output, n1_1_output}, w0_2_2, w1_2_2, w2_2_2, d_c_2_2, thresh_2_2, n2_2_output, potential_t_2_2);
+    snn_neuron n2_3(clk, internal_rst, en2_3, {n1_3_output, n1_2_output, n1_1_output}, w0_2_3, w1_2_3, w2_2_3, d_c_2_3, thresh_2_3, n2_3_output, potential_t_2_3);
     
-    always@(posedge clk or posedge rst) begin
-        if(rst) begin
+    always@(posedge clk or posedge internal_rst) begin
+        if(internal_rst) begin
             state <= IDLE;
             ld_0 <= 0;
             ld_1 <= 0;
