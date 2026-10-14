@@ -1,0 +1,27 @@
+=== SNN FPGA Testbench: 20 Test Cases ===
+
+Test 0: PASS (predicted=1, expected=1)
+Test 1: PASS (predicted=0, expected=0)
+Test 2: FAIL (predicted=0, expected=2)  pot_t: n2_1=74016, n2_2=70162, n2_3=61893
+Test 3: PASS (predicted=2, expected=2)
+Test 4: FAIL (predicted=2, expected=1)  pot_t: n2_1=53831, n2_2=54943, n2_3=58194
+Test 5: PASS (predicted=0, expected=0)
+Test 6: PASS (predicted=0, expected=0)
+Test 7: PASS (predicted=0, expected=0)
+Test 8: PASS (predicted=0, expected=0)
+Test 9: PASS (predicted=0, expected=0)
+Test 10: FAIL (predicted=0, expected=2)  pot_t: n2_1=95062, n2_2=83978, n2_3=84231
+Test 11: PASS (predicted=2, expected=2)
+Test 12: PASS (predicted=2, expected=2)
+Test 13: PASS (predicted=1, expected=1)
+Test 14: FAIL (predicted=0, expected=1)  pot_t: n2_1=37187, n2_2=32140, n2_3=25748
+Test 15: PASS (predicted=1, expected=1)
+Test 16: PASS (predicted=0, expected=0)
+Test 17: PASS (predicted=0, expected=0)
+Test 18: PASS (predicted=0, expected=0)
+Test 19: PASS (predicted=1, expected=1)
+
+=== Results: 16 / 20 correct (80% accuracy) ===
+
+FPGA inference is working well.
+$finish called at time : 8995 ns : File "C:/Users/kadhi/LIF_FPGA/LIF_FPGA.srcs/sim_1/new/top_snn_tb.v" Line 145
